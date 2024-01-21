@@ -1,7 +1,7 @@
 
-Introducing MultCom: Your Ultimate Serial Port Monitoring Solution!
+Introducing MultiCOM: Your Ultimate Serial Port Monitoring Solution!
 
-Unleash the full potential of your projects with MultCom, the Windows application designed to enhance your experience in serial communication. Whether you're working on an ESP project or any other device relying on serial communication, MultCom is your go-to solution for seamless monitoring of up to six serial ports simultaneously.
+Unleash the full potential of your projects with MultiCOM, the Windows application designed to enhance your experience in serial communication. Whether you're working on an ESP project or any other device relying on serial communication, MultiCOM is your go-to solution for seamless monitoring of up to six serial ports simultaneously.
 
 Key Features:
 
