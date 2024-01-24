@@ -156,6 +156,32 @@ uses Clipbrd;
 
 {$R *.DFM}
 
+
+
+function GetLocalVersion: string;
+var
+  VerInfoSize: DWORD;
+  VerInfo: Pointer;
+  VerValueSize: DWORD;
+  VerValue: PVSFixedFileInfo;
+  Dummy: DWORD;
+begin
+  VerInfoSize := GetFileVersionInfoSize(PChar(ParamStr(0)), Dummy);
+  GetMem(VerInfo, VerInfoSize);
+  GetFileVersionInfo(PChar(ParamStr(0)), 0, VerInfoSize, VerInfo);
+  VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
+  with VerValue^ do
+  begin
+    Result := IntToStr(dwFileVersionMS shr 16);
+    Result := Result + '.' + IntToStr(dwFileVersionMS and $FFFF);
+    Result := Result + '.' + IntToStr(dwFileVersionLS shr 16);
+    Result := Result + '.' + IntToStr(dwFileVersionLS and $FFFF);
+  end;
+  FreeMem(VerInfo, VerInfoSize);
+end;
+
+ /////////////////////////////////////////////////////////////////////////////
+
 function TMainForm.GetAppDir: string;
 begin
   Result := ExtractFilePath(Paramstr(0));
@@ -350,7 +376,7 @@ var x: integer;
 begin
   for x := 0 to 5 do
   begin
-    StatusBar.Panels[x].Width := Width div 6;
+    StatusBar.Panels[x].Width := (Width - 100) div 6;
   end;
 end;
 
@@ -362,11 +388,11 @@ var
 begin
 
   ConfigFile := GetAppDir + 'config.ini';
+  LoadConfig(ConfigFile);
   UpDateStatusBar();
   UpdateEmulation();
   UpdateFont();
-
-  LoadConfig(ConfigFile);
+  Statusbar.Panels[6].Text := 'V : '+GetLocalVersion();
 
   for x := 0 to 5 do
   begin
