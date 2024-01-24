@@ -135,6 +135,7 @@ type
     function GetComLabel(idx: integer): TsLabel;
     procedure UpDateStatusBar();
     procedure UpdateFont();
+    procedure UpdateEmulation();
     procedure LoadConfig(Filename: string);
     procedure SaveConfig(Filename: string);
 
@@ -220,6 +221,21 @@ var
 begin
   for x := 0 to 5 do
     GetComTerminal(x).Font.Size := StrToInt(FontSelect.Items[FontSelect.ItemIndex]);
+end;
+
+/////////////////////////////////////////////////////////////////////////////
+
+procedure TMainForm.UpdateEmulation();
+var x: integer;
+begin
+  for x := 0 to 5 do
+  begin
+    case emulationCombo.ItemIndex of
+      0: GetComTerminal(x).Emulation := teNone;
+      1: GetComTerminal(x).Emulation := teVT100orANSI;
+      2: GetComTerminal(x).Emulation := teVT52;
+    end;
+  end;
 end;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -347,6 +363,7 @@ begin
 
   ConfigFile := GetAppDir + 'config.ini';
   UpDateStatusBar();
+  UpdateEmulation();
   UpdateFont();
 
   LoadConfig(ConfigFile);
@@ -471,21 +488,12 @@ var
 begin
   for x := 0 to 5 do
     GetComTerminal(x).Rows := (GetCompanel(x).Height div GetComTerminal(x).Font.Size) - 6;
-
 end;
  /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.emulationComboCloseUp(Sender: TObject);
-var x: integer;
 begin
-  for x := 0 to 5 do
-  begin
-    case emulationCombo.ItemIndex of
-      0: GetComTerminal(x).Emulation := teNone;
-      1: GetComTerminal(x).Emulation := teVT100orANSI;
-      2: GetComTerminal(x).Emulation := teVT52;
-    end;
-  end;
+  UpdateEmulation();
 end;
  /////////////////////////////////////////////////////////////////////////////
 
