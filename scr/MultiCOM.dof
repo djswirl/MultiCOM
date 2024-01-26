@@ -65,7 +65,7 @@ IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=1
 MinorVer=0
-Release=2
+Release=3
 Build=0
 Debug=0
 PreRelease=0
@@ -76,13 +76,12 @@ Locale=2057
 CodePage=1252
 [Version Info Keys]
 CompanyName=Brian Canning
-FileDescription=Windows applications that allows you to monitor up to 6 serial ports …
-FileVersion=1.0.2.0
+FileDescription=MultCOM, 6 port serial Monitoring
+FileVersion=1.0.3.0
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=MultiCOM
 ProductVersion=1.0.0.0
-Comments=Windows applications that allows you to monitor up to 6 serial ports 
-MultCOM, 6 port serial Monitoring
+Comments=MultCOM, 6 port serial Monitoring

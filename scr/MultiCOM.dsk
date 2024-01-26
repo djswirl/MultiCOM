@@ -1,36 +1,26 @@
 [Closed Files]
-File_0=SourceModule,'c:\program files (x86)\borland\delphi6\source\vcl\Controls.pas',0,1,3953,1,3961,0,0
-File_1=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\sButton.pas',0,1,1201,1,1218,0,0
-File_2=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPortEsc.pas',0,1,91,1,102,0,0
-File_3=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\acnt_reg12\sSkinProvider.pas',0,1,7766,1,7828,0,0
-File_4=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPortSetup.pas',0,1,54,16,66,0,0
-File_5=SourceModule,'c:\program files (x86)\borland\delphi6\source\rtl\Sys\sysutils.pas',0,1,158,32,170,0,0
-File_6=SourceModule,'c:\program files (x86)\borland\delphi6\source\vcl\Dialogs.pas',0,1,305,42,307,0,0
-File_7=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\acSlider.pas',0,1,498,1,509,0,0
+File_0=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\ComPort-Library\Source\CPortEsc.pas',0,1,1,18,1,0,0
+File_1=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\ComPort-Library\Source\CPortCtl.pas',0,1,2129,1,2139,0,0
+File_2=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\ComPort-Library\Source\CPort.pas',0,1,2017,1,2027,0,0
+File_3=SourceModule,'c:\program files (x86)\borland\delphi6\source\rtl\Win\Windows.pas',0,1,28672,22,28689,0,0
+File_4=SourceModule,'c:\program files (x86)\borland\delphi6\source\vcl\Dialogs.pas',0,1,299,34,317,0,0
+File_5=SourceModule,'c:\program files (x86)\borland\delphi6\source\vcl\Controls.pas',0,1,118,7,130,0,0
+File_6=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPort.pas',0,1,1904,30,1907,0,0
+File_7=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\sButton.pas',0,1,1201,1,1218,0,0
+File_8=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPortEsc.pas',0,1,91,1,102,0,0
+File_9=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\acnt_reg12\sSkinProvider.pas',0,1,7766,1,7828,0,0
 
 [Modules]
-Module0=D:\Delphi\MultiCom\ComMainForm.pas
-Module1=C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPort.pas
-Module2=C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPortCtl.pas
-Count=3
+Module0=D:\Delphi\MultiCOM\ComMainForm.pas
+Count=1
 EditWindowCount=1
 
-[D:\Delphi\MultiCom\ComMainForm.pas]
+[D:\Delphi\MultiCOM\ComMainForm.pas]
 ModuleType=SourceModule
 FormState=1
 FormOnTop=0
 
-[C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPort.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPortCtl.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Delphi\Ents Booking V4.3\ProjectGroup1.bpg]
+[C:\Program Files (x86)\Borland\Delphi6\Projects\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
@@ -39,59 +29,42 @@ FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=3
+ViewCount=1
 CurrentView=0
 View0=0
-View1=1
-View2=2
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=272
-Top=113
-Width=1254
-Height=735
-MaxLeft=-8
-MaxTop=107
-ClientWidth=1238
-ClientHeight=696
-LeftPanelSize=140
+Left=275
+Top=110
+Width=1306
+Height=742
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1290
+ClientHeight=703
+LeftPanelSize=202
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=0
+BottomPanelSize=251
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D65737361676556696577D60400000000000002EC00000000000000010000000000000000000000000100000000D6040000000000000100000000D6040000000000000100000000D6040000000000000100000000D6040000000000000100000000D6040000000000000100000000D6040000000000000100000000D6040000000000000100000000D6040000000000000100000000D6040000000000000100000000D6040000000000000100000000D6040000000000000100000000D604000000000000FFFFFFFF
+BottomPanelData=00000400000000000A0500000000000002FB000000000000000100000000000000000000000001000000000A0500000000000001000000000A0500000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=D:\Delphi\MultiCom\ComMainForm.pas
-CursorX=22
-CursorY=392
-TopLine=375
-LeftCol=1
-
-[View1]
-Module=C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPortCtl.pas
-CursorX=33
-CursorY=1890
-TopLine=1879
-LeftCol=1
-
-[View2]
-Module=C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPort.pas
-CursorX=1
-CursorY=3262
-TopLine=3251
+Module=D:\Delphi\MultiCOM\ComMainForm.pas
+CursorX=23
+CursorY=286
+TopLine=274
 LeftCol=1
 
 [Watches]
 Count=0
 
 [Breakpoints]
-Count=1
-Breakpoint0='C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPort.pas',2005,'',0,1,'',1,0,0,'',1,'','',''
+Count=0
 
 [AddressBreakpoints]
 Count=0
@@ -187,8 +160,8 @@ LRDockWidth=266
 Dockable=1
 SplitPos=131
 ArrangeBy=Name
-SelectedItem=
-ExpandedItems=AnimEffects.FormShow,AnimEffects.Minimizing,BoundLabel,FormHeader,MenuAnimation,Timeouts
+SelectedItem=OnRxChar
+ExpandedItems=AnimEffects.FormShow,AnimEffects.Minimizing,Font,FormHeader,MenuAnimation,SkinningRules,Timeouts
 HiddenCategories=
 
 [WatchWindow]
@@ -379,29 +352,29 @@ Visible=1
 State=0
 Left=0
 Top=12
-Width=140
-Height=684
+Width=202
+Height=437
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=140
-ClientHeight=684
+ClientWidth=202
+ClientHeight=437
 TBDockHeight=305
-LRDockWidth=140
+LRDockWidth=202
 Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=0
+Visible=1
 State=0
 Left=12
 Top=0
-Width=1226
-Height=236
+Width=1278
+Height=251
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1226
-ClientHeight=236
-TBDockHeight=236
+ClientWidth=1278
+ClientHeight=251
+TBDockHeight=251
 LRDockWidth=443
 Dockable=1
 
