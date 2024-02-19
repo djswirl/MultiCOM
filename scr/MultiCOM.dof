@@ -65,7 +65,7 @@ IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=1
 MinorVer=0
-Release=3
+Release=5
 Build=0
 Debug=0
 PreRelease=0
@@ -77,7 +77,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=Brian Canning
 FileDescription=MultCOM, 6 port serial Monitoring
-FileVersion=1.0.3.0
+FileVersion=1.0.5.0
 InternalName=
 LegalCopyright=
 LegalTrademarks=

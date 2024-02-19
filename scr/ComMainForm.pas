@@ -1,12 +1,19 @@
 unit ComMainForm;
 
+
+// change in CPortCtl
+// FFontWidth := Metrics.tmAveCharWidth.tmMaxCharWidth;
+// to
+// FFontWidth := Metrics.tmAveCharWidth;
+
 interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls, CPort, CPortCtl, sSkinProvider, sButton, sPanel,
   sSkinManager, sMemo, sSplitter, sLabel, acSlider, acPNG, acImage,
   sComboBox, IniFiles, DateUtils, ComCtrls, sStatusBar, Menus, sDialogs,
-  sCheckBox, ImgList;
+  sCheckBox, ImgList, ToolWin, acCoolBar, sToolBar, acHeaderControl,
+  Buttons, sSpeedButton, sBitBtn, ShellAPI, acArcControls;
 
 type
   TMainForm = class(TForm)
@@ -16,12 +23,6 @@ type
     ComPort4: TComPort;
     ComPort5: TComPort;
     MenuPanel: TsPanel;
-    ComSlider0: TsSlider;
-    ComSlider1: TsSlider;
-    ComSlider2: TsSlider;
-    ComSlider3: TsSlider;
-    ComSlider4: TsSlider;
-    ComSlider5: TsSlider;
     ComPanel0: TPanel;
     Panel2: TPanel;
     sImage7: TsImage;
@@ -58,17 +59,11 @@ type
     ComLabel1: TsLabel;
     ConnectBtn1: TsButton;
     SettingsBtn1: TsButton;
-    FontSelect: TsComboBox;
-    sLabel1: TsLabel;
-    LFSilder: TsSlider;
-    TABSlider: TsSlider;
     ComTerminal1: TComTerminal;
     ComTerminal2: TComTerminal;
     ComTerminal3: TComTerminal;
     ComTerminal4: TComTerminal;
     ComTerminal5: TComTerminal;
-    TimeSlider: TsSlider;
-    AutoBtn: TsButton;
     sSkinManager1: TsSkinManager;
     sSkinProvider1: TsSkinProvider;
     StatusBar: TsStatusBar;
@@ -84,9 +79,34 @@ type
     AutoChk4: TsCheckBox;
     AutoChk5: TsCheckBox;
     PopClear: TMenuItem;
-    emulationCombo: TsComboBox;
-    IconImageList: TImageList;
     ErrorTimmer: TTimer;
+    sPanel1: TsPanel;
+    ComSlider0: TsSlider;
+    ComSlider1: TsSlider;
+    ComSlider2: TsSlider;
+    ComSlider3: TsSlider;
+    ComSlider4: TsSlider;
+    ComSlider5: TsSlider;
+    LogDirBtn: TsSpeedButton;
+    sPanel2: TsPanel;
+    LFSilder: TsSlider;
+    emulationCombo: TsComboBox;
+    FontSelect: TsComboBox;
+    TimeSlider: TsSlider;
+    TABSlider: TsSlider;
+    ExspandBtn: TsSpeedButton;
+    AutoLogBtn: TsSpeedButton;
+    MenuImg: TImageList;
+    BtnImg: TImageList;
+    sSpeedButton2: TsSpeedButton;
+    sSpeedButton3: TsSpeedButton;
+    sSpeedButton4: TsSpeedButton;
+    sSpeedButton5: TsSpeedButton;
+    Timer0: TTimer;
+    ShrinkBtn: TsSpeedButton;
+    sSpeedButton7: TsSpeedButton;
+    vFitBtn: TsSpeedButton;
+    sSpeedButton6: TsSpeedButton;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure OpenClose(Sender: TObject);
@@ -104,10 +124,9 @@ type
     procedure ComTerminalResize(Sender: TObject);
     procedure FontSelectCloseUp(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure AutoBtnClick(Sender: TObject);
+    procedure ShrinkBtnClick(Sender: TObject);
     procedure ComPortRxChar(Sender: TObject; Count: Integer);
     procedure PopExportClick(Sender: TObject);
-    procedure AutoClick(Sender: TObject);
     procedure SaveToLog(SessionDate: string; Port: string; DataLine: string);
     procedure PopClearClick(Sender: TObject);
     procedure emulationComboCloseUp(Sender: TObject);
@@ -116,6 +135,11 @@ type
       WinError: Int64; WinMessage: string);
     procedure ErrorTimmerTimer(Sender: TObject);
     function RemoveEscapeCodes(const InputStr: string): string;
+    procedure AutoClick(Sender: TObject);
+    procedure AutoLogBtnClick(Sender: TObject);
+    procedure LogDirBtnClick(Sender: TObject);
+    procedure ExspandBtnClick(Sender: TObject);
+    procedure vFitBtnClick(Sender: TObject);
   private
     { Private declarations }
     FResizing: Boolean;
@@ -145,6 +169,7 @@ var
   LogAry: array[0..5] of bool;
   RxAry: array[0..5] of string;
   ConfigFile, SessionDate: string;
+  AutoLogOn: boolean;
 implementation
 
 uses Clipbrd;
@@ -292,6 +317,7 @@ begin
       Break;
     end;
 end;
+/////////////////////////////////////////////////////////////////////////////
 
 function TMainForm.RemoveEscapeCodes(const InputStr: string): string;
 var
@@ -317,13 +343,15 @@ var
 begin
   DataLine := StringReplace(DataLine, #10, '', [rfReplaceAll, rfIgnoreCase]);
   DataLine := StringReplace(DataLine, #13, '', [rfReplaceAll, rfIgnoreCase]);
+  DataLine := RemoveEscapeCodes(DataLine);
+
   Filename := GetAppDir + 'Logs\' + SessionDate + Port + '.txt';
   AssignFile(fFile, Filename);
   if FileExists(Filename) <> true then
     Rewrite(fFile)
   else
     Append(fFile);
-  WriteLn(fFile, RemoveEscapeCodes(DataLine));
+  WriteLn(fFile, DataLine);
   CloseFile(fFile)
 end;
 
@@ -411,7 +439,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
   x: integer;
 begin
-
+  AutoLogOn := false;
   ConfigFile := GetAppDir + 'config.ini';
   LoadConfig(ConfigFile);
   UpDateStatusBar();
@@ -427,6 +455,7 @@ begin
     StatusBar.Panels[x + 1].Text := GetComPort(x).Port;
   end;
   SessionDate := FormatDateTime('yyyy-mm-dd-hh-nn-', Now());
+
 end;
 /////////////////////////////////////////////////////////////////////////////
 
@@ -446,6 +475,41 @@ begin
   ComTerminalResize(nil);
   UpDateStatusBar();
 end;
+   /////////////////////////////////////////////////////////////////////////////
+
+procedure TMainForm.AutoClick(Sender: TObject);
+var ChkSender, CheckBox: TsCheckBox;
+begin
+  if Sender is TsCheckBox then
+  begin
+    ChkSender := Sender as TsCheckBox;
+    CheckBox := FindComponent('AutoChk' + IntToStr(ChkSender.Tag)) as TsCheckBox;
+    LogAry[ChkSender.Tag] := CheckBox.Checked;
+  end;
+end;
+
+
+  /////////////////////////////////////////////////////////////////////////////
+
+procedure TMainForm.AutoLogBtnClick(Sender: TObject);
+var CheckBox: TsCheckBox;
+var x: integer;
+begin
+  AutoLogOn := not AutoLogOn;
+  for x := 0 to 5 do
+  begin
+    CheckBox := FindComponent('AutoChk' + IntToStr(x)) as TsCheckBox;
+    CheckBox.Checked := AutoLogOn;
+  end;
+end;
+  /////////////////////////////////////////////////////////////////////////////
+
+procedure TMainForm.LogDirBtnClick(Sender: TObject);
+begin
+  ShellExecute(Application.Handle, 'open', 'explorer.exe',
+    PChar(GetAppDir + 'Logs'), nil, SW_NORMAL);
+end;
+
 /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.LFSilderSliderChange(Sender: TObject);
@@ -495,15 +559,17 @@ begin
         Btn.Caption := 'Connect';
         GetConnectBtn(Btn.Tag).ImageIndex := 0;
         GetConnectBtn(Btn.Tag).Down := False;
+        Timer0.Enabled := false;
       end else begin
         GetComPort(Btn.Tag).Open;
         GetComLabel(Btn.Tag).Font.Color := $0033CC00;
         Btn.Caption := 'Disconnect';
         GetConnectBtn(Btn.Tag).ImageIndex := 1;
         GetConnectBtn(Btn.Tag).Down := True;
+        Timer0.Enabled := True;
       end;
     end;
-    AutoBtn.SetFocus;
+  //  AutoBtn.SetFocus;
   end;
 end;
 
@@ -570,8 +636,8 @@ procedure TMainForm.ComTerminalResize(Sender: TObject);
 var
   x: integer;
 begin
-  for x := 0 to 5 do
-    GetComTerminal(x).Rows := (GetCompanel(x).Height div GetComTerminal(x).Font.Size) - 6;
+ // for x := 0 to 5 do
+ //   GetComTerminal(x).Rows := (GetCompanel(x).Height div GetComTerminal(x).Font.Size) - 6;
 end;
  /////////////////////////////////////////////////////////////////////////////
 
@@ -587,8 +653,7 @@ begin
 end;
 
 /////////////////////////////////////////////////////////////////////////////
-
-procedure TMainForm.AutoBtnClick(Sender: TObject);
+ procedure TMainForm.vFitBtnClick(Sender: TObject);
 var
   x, HeadFoot, PHeight: integer;
   DivCount: integer;
@@ -614,6 +679,69 @@ begin
     AutoSize := false;
   end;
   update;
+
+end;
+
+/////////////////////////////////////////////////////////////////////////////
+procedure TMainForm.ExspandBtnClick(Sender: TObject);
+var
+  x, HeadFoot, PHeight: integer;
+  DivCount, MHeight: integer;
+begin
+ if (Height > Screen.WorkAreaHeight) then Height := Screen.WorkAreaHeight;
+ if (Width > Screen.WorkAreaWidth) then Width := Screen.WorkAreaWidth;
+  DivCount := 0;
+  MHeight :=0;
+  for x := 0 to 5 do
+  begin
+    if (VisAry[x] = true) then
+    begin
+    MHeight := MHeight + GetCompanel(x).Height;
+    DivCount := DivCount + 1;
+    end;
+
+  end;
+  HeadFoot := MenuPanel.Height + StatusBar.Height;
+  MainForm.ClientHeight:= MHeight + HeadFoot;
+
+  if (Height > Screen.WorkAreaHeight) then
+  begin
+vFitBtn.Click;
+  end;
+
+
+  update;
+end;
+
+  /////////////////////////////////////////////////////////////////////////////
+
+procedure TMainForm.ShrinkBtnClick(Sender: TObject);
+var
+  x, HeadFoot, PHeight: integer;
+  DivCount, MHeight: integer;
+begin
+ if (Height > Screen.WorkAreaHeight) then Height := Screen.WorkAreaHeight;
+ if (Width > Screen.WorkAreaWidth) then Width := Screen.WorkAreaWidth;
+  DivCount := 0;
+  MHeight :=0;
+  for x := 0 to 5 do
+  begin
+    if (VisAry[x] = true) then
+    MHeight := MHeight + GetCompanel(x).Height;
+
+  end;
+  HeadFoot := MenuPanel.Height + StatusBar.Height;
+  MainForm.ClientHeight:= MHeight + HeadFoot;
+
+  if (Height < Screen.WorkAreaHeight) then
+  begin
+ AutoSize := true;
+AutoSize := false;
+  end;
+
+
+  update;
+
 end;
 
  /////////////////////////////////////////////////////////////////////////////
@@ -684,18 +812,9 @@ begin
 
 end;
 
- /////////////////////////////////////////////////////////////////////////////
 
-procedure TMainForm.AutoClick(Sender: TObject);
-var ChkSender, CheckBox: TsCheckBox;
-begin
-  if Sender is TsCheckBox then
-  begin
-    ChkSender := Sender as TsCheckBox;
-    CheckBox := FindComponent('AutoChk' + IntToStr(ChkSender.Tag)) as TsCheckBox;
-    LogAry[ChkSender.Tag] := CheckBox.Checked;
-  end;
-end;
+
+
 
 end.
 
