@@ -2,7 +2,8 @@ program MultiCom;
 
 uses
   Forms,
-  ComMainForm in 'ComMainForm.pas' {MainForm};
+  ComMainForm in 'ComMainForm.pas' {MainForm},
+  SaveLog in 'SaveLog.pas';
 
 {$R *.RES}
 

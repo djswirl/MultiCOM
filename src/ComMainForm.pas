@@ -107,9 +107,11 @@ type
     sSpeedButton7: TsSpeedButton;
     vFitBtn: TsSpeedButton;
     sSpeedButton6: TsSpeedButton;
+    SOTSlider: TsSlider;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure OpenClose(Sender: TObject);
+    function GetAppDir: string;
     procedure Settings(Sender: TObject);
     procedure SliderChange(Sender: TObject);
     procedure ResizeIconMouseDown(Sender: TObject; Button: TMouseButton;
@@ -127,28 +129,28 @@ type
     procedure ShrinkBtnClick(Sender: TObject);
     procedure ComPortRxChar(Sender: TObject; Count: Integer);
     procedure PopExportClick(Sender: TObject);
-    procedure SaveToLog(SessionDate: string; Port: string; DataLine: string);
     procedure PopClearClick(Sender: TObject);
     procedure emulationComboCloseUp(Sender: TObject);
     procedure ComPortException(Sender: TObject;
       TComException: TComExceptions; ComportMessage: string;
       WinError: Int64; WinMessage: string);
     procedure ErrorTimmerTimer(Sender: TObject);
-    function RemoveEscapeCodes(const InputStr: string): string;
     procedure AutoClick(Sender: TObject);
     procedure AutoLogBtnClick(Sender: TObject);
     procedure LogDirBtnClick(Sender: TObject);
     procedure ExspandBtnClick(Sender: TObject);
     procedure vFitBtnClick(Sender: TObject);
+    procedure SOTSliderSliderChange(Sender: TObject);
+    function GetComTerminal(idx: integer): TComTerminal;
   private
     { Private declarations }
     FResizing: Boolean;
     FStartY: Integer;
     function GetLocalVersion: string;
-    function GetAppDir: string;
+
     function GetConnectBtn(idx: integer): TsButton;
     function GetComPort(idx: integer): TComPort;
-    function GetComTerminal(idx: integer): TComTerminal;
+
     function GetComSlider(idx: integer): TsSlider;
     function GetCompanel(idx: integer): tPanel;
     function GetComLabel(idx: integer): TsLabel;
@@ -168,14 +170,14 @@ var
   VisAry: array[0..5] of bool;
   LogAry: array[0..5] of bool;
   RxAry: array[0..5] of string;
-  ConfigFile, SessionDate: string;
+  ConfigFile, LogDir, SessionDate: string;
   AutoLogOn: boolean;
+
 implementation
 
-uses Clipbrd;
+uses Clipbrd, SaveLog;
 
 {$R *.DFM}
-
 
 
 function TMainForm.GetLocalVersion: string;
@@ -274,7 +276,6 @@ end;
 procedure TMainForm.UpdateEmulation();
 var x: integer;
   CustomComTerminal: TCustomComTerminal;
-
 begin
   for x := 0 to 5 do
   begin
@@ -303,59 +304,6 @@ procedure TMainForm.ResizeIconMouseUp(Sender: TObject; Button: TMouseButton;
 begin
   FResizing := False;
 end;
-/////////////////////////////////////////////////////////////////////////////
-
-function PosEx(const SubStr, S: string; Offset: Integer = 1): Integer;
-var
-  i: Integer;
-begin
-  Result := 0;
-  for i := Offset to Length(S) - Length(SubStr) + 1 do
-    if Copy(S, i, Length(SubStr)) = SubStr then
-    begin
-      Result := i;
-      Break;
-    end;
-end;
-/////////////////////////////////////////////////////////////////////////////
-
-function TMainForm.RemoveEscapeCodes(const InputStr: string): string;
-var
-  EscapeCodeStart, EscapeCodeEnd: Integer;
-begin
-  Result := InputStr;
-  EscapeCodeStart := Pos(#27, Result);
-  while EscapeCodeStart > 0 do
-  begin
-    EscapeCodeEnd := PosEx('m', Result, EscapeCodeStart);
-    if EscapeCodeEnd > 0 then
-      Delete(Result, EscapeCodeStart, EscapeCodeEnd - EscapeCodeStart + 1);
-    EscapeCodeStart := PosEx(#27, Result, EscapeCodeStart);
-  end;
-end;
-
-/////////////////////////////////////////////////////////////////////////////
-
-procedure TMainForm.SaveToLog(SessionDate: string; Port: string; DataLine: string);
-var
-  fFile: TextFile;
-  Filename: string;
-begin
-  DataLine := StringReplace(DataLine, #10, '', [rfReplaceAll, rfIgnoreCase]);
-  DataLine := StringReplace(DataLine, #13, '', [rfReplaceAll, rfIgnoreCase]);
-  DataLine := RemoveEscapeCodes(DataLine);
-
-  Filename := GetAppDir + 'Logs\' + SessionDate + Port + '.txt';
-  AssignFile(fFile, Filename);
-  if FileExists(Filename) <> true then
-    Rewrite(fFile)
-  else
-    Append(fFile);
-  WriteLn(fFile, DataLine);
-  CloseFile(fFile)
-end;
-
-
 /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.LoadConfig(Filename: string);
@@ -417,6 +365,7 @@ begin
     IniFile.Free;
   end;
 end;
+
 /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -428,7 +377,6 @@ end;
 /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.UpDateStatusBar();
-var x: integer;
 begin
   StatusBar.Panels[7].Width := Width - 880;
 end;
@@ -441,6 +389,7 @@ var
 begin
   AutoLogOn := false;
   ConfigFile := GetAppDir + 'config.ini';
+  LogDir := GetAppDir + 'Logs\';
   LoadConfig(ConfigFile);
   UpDateStatusBar();
   UpdateEmulation();
@@ -457,6 +406,7 @@ begin
   SessionDate := FormatDateTime('yyyy-mm-dd-hh-nn-', Now());
 
 end;
+
 /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -467,6 +417,7 @@ begin
       GetComPort(x).close;
   SaveConfig(ConfigFile);
 end;
+
 /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -475,7 +426,8 @@ begin
   ComTerminalResize(nil);
   UpDateStatusBar();
 end;
-   /////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.AutoClick(Sender: TObject);
 var ChkSender, CheckBox: TsCheckBox;
@@ -487,7 +439,6 @@ begin
     LogAry[ChkSender.Tag] := CheckBox.Checked;
   end;
 end;
-
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -569,7 +520,6 @@ begin
         Timer0.Enabled := True;
       end;
     end;
-  //  AutoBtn.SetFocus;
   end;
 end;
 
@@ -587,8 +537,6 @@ begin
   else
     Statusbar.Panels[7].Text := 'ERROR : ' + ComportMessage + ' (' + IntToStr(WinError) + ')'; ErrorTimmer.Enabled := True;
   end;
- // abort;
-
 end;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -633,8 +581,7 @@ end;
  /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.ComTerminalResize(Sender: TObject);
-var
-  x: integer;
+//var x: integer;
 begin
  // for x := 0 to 5 do
  //   GetComTerminal(x).Rows := (GetCompanel(x).Height div GetComTerminal(x).Font.Size) - 6;
@@ -653,7 +600,8 @@ begin
 end;
 
 /////////////////////////////////////////////////////////////////////////////
- procedure TMainForm.vFitBtnClick(Sender: TObject);
+
+procedure TMainForm.vFitBtnClick(Sender: TObject);
 var
   x, HeadFoot, PHeight: integer;
   DivCount: integer;
@@ -679,34 +627,31 @@ begin
     AutoSize := false;
   end;
   update;
-
 end;
 
 /////////////////////////////////////////////////////////////////////////////
+
 procedure TMainForm.ExspandBtnClick(Sender: TObject);
 var
-  x, HeadFoot, PHeight: integer;
-  DivCount, MHeight: integer;
+  x, HeadFoot: integer;
+  MHeight: integer;
 begin
- if (Height > Screen.WorkAreaHeight) then Height := Screen.WorkAreaHeight;
- if (Width > Screen.WorkAreaWidth) then Width := Screen.WorkAreaWidth;
-  DivCount := 0;
-  MHeight :=0;
+  if (Height > Screen.WorkAreaHeight) then Height := Screen.WorkAreaHeight;
+  if (Width > Screen.WorkAreaWidth) then Width := Screen.WorkAreaWidth;
+  MHeight := 0;
   for x := 0 to 5 do
   begin
     if (VisAry[x] = true) then
     begin
-    MHeight := MHeight + GetCompanel(x).Height;
-    DivCount := DivCount + 1;
+      MHeight := MHeight + GetCompanel(x).Height;
     end;
-
   end;
   HeadFoot := MenuPanel.Height + StatusBar.Height;
-  MainForm.ClientHeight:= MHeight + HeadFoot;
+  MainForm.ClientHeight := MHeight + HeadFoot;
 
   if (Height > Screen.WorkAreaHeight) then
   begin
-vFitBtn.Click;
+    vFitBtn.Click;
   end;
 
 
@@ -718,55 +663,58 @@ end;
 procedure TMainForm.ShrinkBtnClick(Sender: TObject);
 var
   x, HeadFoot, PHeight: integer;
-  DivCount, MHeight: integer;
+  MHeight: integer;
 begin
- if (Height > Screen.WorkAreaHeight) then Height := Screen.WorkAreaHeight;
- if (Width > Screen.WorkAreaWidth) then Width := Screen.WorkAreaWidth;
-  DivCount := 0;
-  MHeight :=0;
+  if (Height > Screen.WorkAreaHeight) then Height := Screen.WorkAreaHeight;
+  if (Width > Screen.WorkAreaWidth) then Width := Screen.WorkAreaWidth;
+  MHeight := 0;
   for x := 0 to 5 do
   begin
     if (VisAry[x] = true) then
-    MHeight := MHeight + GetCompanel(x).Height;
+      MHeight := MHeight + GetCompanel(x).Height;
 
   end;
   HeadFoot := MenuPanel.Height + StatusBar.Height;
-  MainForm.ClientHeight:= MHeight + HeadFoot;
+  MainForm.ClientHeight := MHeight + HeadFoot;
 
   if (Height < Screen.WorkAreaHeight) then
   begin
- AutoSize := true;
-AutoSize := false;
+    AutoSize := true;
+    AutoSize := false;
   end;
-
-
   update;
-
 end;
 
  /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.ComPortRxChar(Sender: TObject; Count: Integer);
 var
-  Str: string;
+  Str, Portstr: string;
   ComSender: tComPort;
+  Tag: integer;
 begin
   ComSender := Sender as tComPort;
+  Tag := ComSender.Tag;
   GetComPort(ComSender.Tag).ReadStr(Str, Count);
-
+  Portstr := GetComPort(ComSender.Tag).Port;
   RxAry[ComSender.Tag] := RxAry[ComSender.Tag] + Str;
 
-  if ((Pos(#0, RxAry[ComSender.Tag]) > 0) or (Pos(#13 + #10, RxAry[ComSender.Tag]) > 0)) then
+  if ((Pos(#0, RxAry[Tag]) > 0) or (Pos(#13 + #10, RxAry[Tag]) > 0)) then
   begin
-    StatusBar.Panels[ComSender.Tag + 1].Text := GetComPort(ComSender.Tag).Port + ': ' + IntToStr(Length(RxAry[ComSender.Tag])) + ' Bytes recv';
+    StatusBar.Panels[Tag + 1].Text := Portstr + ': ' + IntToStr(Length(RxAry[Tag])) + ' Bytes recv';
     if (TimeSlider.SliderOn) then
     begin
-      RxAry[ComSender.Tag] := FormatDateTime('hh:nn:ss.zzz', Now()) + ' : ' + RxAry[ComSender.Tag];
+      RxAry[Tag] := FormatDateTime('hh:nn:ss.zzz', Now()) + ' : ' + RxAry[Tag];
     end;
-    GetComTerminal(ComSender.Tag).WriteStr(RxAry[ComSender.Tag]);
+    GetComTerminal(Tag).WriteStr(RxAry[Tag]);
 
-    if (LogAry[ComSender.Tag]) then SaveToLog(SessionDate, GetComPort(ComSender.Tag).Port, RxAry[ComSender.Tag]);
-    RxAry[ComSender.Tag] := '';
+    if (LogAry[Tag]) then
+    begin
+      TLogSaveThread.Create(Portstr, RxAry[Tag], Tag);
+      StatusBar.Panels[Tag + 1].Text := 'Saving';
+    end;
+
+    RxAry[Tag] := '';
   end;
 end;
  /////////////////////////////////////////////////////////////////////////////
@@ -812,9 +760,17 @@ begin
 
 end;
 
+  /////////////////////////////////////////////////////////////////////////////
 
+procedure TMainForm.SOTSliderSliderChange(Sender: TObject);
+begin
+  if (SOTSlider.SliderOn) then
+    SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize)
+  else
+    SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+end;
 
-
+ /////////////////////////////////////////////////////////////////////////////
 
 end.
 
