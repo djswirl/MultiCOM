@@ -59,16 +59,9 @@ type
     ComLabel1: TsLabel;
     ConnectBtn1: TsButton;
     SettingsBtn1: TsButton;
-    ComTerminal1: TComTerminal;
-    ComTerminal2: TComTerminal;
-    ComTerminal3: TComTerminal;
-    ComTerminal4: TComTerminal;
-    ComTerminal5: TComTerminal;
     sSkinManager1: TsSkinManager;
     sSkinProvider1: TsSkinProvider;
     StatusBar: TsStatusBar;
-    ComTerminal0: TComTerminal;
-    ComPort0: TComPort;
     ExportPopup: TPopupMenu;
     PopExport: TMenuItem;
     SaveDialog: TsSaveDialog;
@@ -89,11 +82,8 @@ type
     ComSlider5: TsSlider;
     LogDirBtn: TsSpeedButton;
     sPanel2: TsPanel;
-    LFSilder: TsSlider;
-    emulationCombo: TsComboBox;
     FontSelect: TsComboBox;
     TimeSlider: TsSlider;
-    TABSlider: TsSlider;
     ExspandBtn: TsSpeedButton;
     AutoLogBtn: TsSpeedButton;
     MenuImg: TImageList;
@@ -102,12 +92,28 @@ type
     sSpeedButton3: TsSpeedButton;
     sSpeedButton4: TsSpeedButton;
     sSpeedButton5: TsSpeedButton;
-    Timer0: TTimer;
+    SaveTimer: TTimer;
     ShrinkBtn: TsSpeedButton;
     sSpeedButton7: TsSpeedButton;
     vFitBtn: TsSpeedButton;
     sSpeedButton6: TsSpeedButton;
     SOTSlider: TsSlider;
+    ComPort0: TComPort;
+    PortMemo0: TMemo;
+    PortMemo1: TMemo;
+    PortMemo2: TMemo;
+    PortMemo3: TMemo;
+    PortMemo4: TMemo;
+    PortMemo5: TMemo;
+    Timer1: TTimer;
+    ConnectAllBtn: TsSpeedButton;
+    sSpeedButton8: TsSpeedButton;
+    sLabel1: TsLabel;
+    sLabel2: TsLabel;
+    sLabel3: TsLabel;
+    sLabel4: TsLabel;
+    sLabel5: TsLabel;
+    sLabel6: TsLabel;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure OpenClose(Sender: TObject);
@@ -120,17 +126,12 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure ResizeIconMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
-    procedure LFSilderSliderChange(Sender: TObject);
-    procedure TABSliderSliderChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure ComTerminalResize(Sender: TObject);
     procedure FontSelectCloseUp(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure ShrinkBtnClick(Sender: TObject);
-    procedure ComPortRxChar(Sender: TObject; Count: Integer);
     procedure PopExportClick(Sender: TObject);
     procedure PopClearClick(Sender: TObject);
-    procedure emulationComboCloseUp(Sender: TObject);
     procedure ComPortException(Sender: TObject;
       TComException: TComExceptions; ComportMessage: string;
       WinError: Int64; WinMessage: string);
@@ -141,22 +142,18 @@ type
     procedure ExspandBtnClick(Sender: TObject);
     procedure vFitBtnClick(Sender: TObject);
     procedure SOTSliderSliderChange(Sender: TObject);
-    function GetComTerminal(idx: integer): TComTerminal;
+    procedure SaveTimerTimer(Sender: TObject);
+    procedure RxBuf(Sender: TObject; const Buffer; Count: Integer);
+    procedure Timer1Timer(Sender: TObject);
+    procedure ConnectAllBtnClick(Sender: TObject);
+
   private
     { Private declarations }
     FResizing: Boolean;
     FStartY: Integer;
     function GetLocalVersion: string;
-
-    function GetConnectBtn(idx: integer): TsButton;
-    function GetComPort(idx: integer): TComPort;
-
-    function GetComSlider(idx: integer): TsSlider;
-    function GetCompanel(idx: integer): tPanel;
-    function GetComLabel(idx: integer): TsLabel;
     procedure UpDateStatusBar();
     procedure UpdateFont();
-    procedure UpdateEmulation();
     procedure LoadConfig(Filename: string);
     procedure SaveConfig(Filename: string);
 
@@ -169,7 +166,19 @@ var
   MainForm: TMainForm;
   VisAry: array[0..5] of bool;
   LogAry: array[0..5] of bool;
-  RxAry: array[0..5] of string;
+  PostStrAry: array[0..5] of string;
+  LogRxStrAry: array[0..5] of string;
+  LogStrAry: array[0..5] of TStringList;
+
+  ComPort: array[0..5] of TComPort;
+  ComSlider: array[0..5] of TsSlider;
+  ComPanel: array[0..5] of TPanel;
+  ComLabel: array[0..5] of TsLabel;
+  ConnectBtn: array[0..5] of TSbutton;
+  SettingsBtn: array[0..5] of TSbutton;
+  AutoChk: array[0..5] of TsCheckbox;
+  PortMemo: array[0..5] of TMemo;
+
   ConfigFile, LogDir, SessionDate: string;
   AutoLogOn: boolean;
 
@@ -213,81 +222,14 @@ end;
 
 /////////////////////////////////////////////////////////////////////////////
 
-function TMainForm.GetConnectBtn(idx: integer): TsButton;
-var Btn: TsButton;
-begin
-  Btn := FindComponent('ConnectBtn' + IntToStr(idx)) as TsButton;
-  if (Btn <> nil) then Result := Btn else Result := nil;
-end;
-
-/////////////////////////////////////////////////////////////////////////////
-
-function TMainForm.GetComPort(idx: integer): TComPort;
-var ComPort: TComPort;
-begin
-  ComPort := FindComponent('ComPort' + IntToStr(idx)) as TComPort;
-  if (ComPort <> nil) then Result := ComPort else Result := nil;
-end;
-
-/////////////////////////////////////////////////////////////////////////////
-
-function TMainForm.GetComTerminal(idx: integer): TComTerminal;
-var ComTerminal: TComTerminal;
-begin
-  ComTerminal := FindComponent('ComTerminal' + IntToStr(idx)) as TComTerminal;
-  if (ComTerminal <> nil) then Result := ComTerminal else Result := nil;
-end;
-/////////////////////////////////////////////////////////////////////////////
-
-function TMainForm.GetComSlider(idx: integer): TsSlider;
-var Slider: TsSlider;
-begin
-  Slider := (FindComponent('ComSlider' + IntToStr(idx)) as TsSlider);
-  if (Slider <> nil) then Result := Slider else Result := nil;
-end;
-/////////////////////////////////////////////////////////////////////////////
-
-function TMainForm.GetCompanel(idx: integer): tPanel;
-var Panel: tPanel;
-begin
-  Panel := (FindComponent('ComPanel' + IntToStr(idx)) as tPanel);
-  if (Panel <> nil) then Result := Panel else Result := nil;
-end;
-/////////////////////////////////////////////////////////////////////////////
-
-function TMainForm.GetComLabel(idx: integer): TsLabel;
-var sLabel: TsLabel;
-begin
-  sLabel := (FindComponent('ComLabel' + IntToStr(idx)) as TsLabel);
-  if (sLabel <> nil) then Result := sLabel else Result := nil;
-end;
-/////////////////////////////////////////////////////////////////////////////
-
 procedure TMainForm.UpdateFont();
 var
   x: integer;
 begin
   for x := 0 to 5 do
-    GetComTerminal(x).Font.Size := StrToInt(FontSelect.Items[FontSelect.ItemIndex]);
+    PortMemo[x].Font.Size := StrToInt(FontSelect.Items[FontSelect.ItemIndex]);
 end;
 
-/////////////////////////////////////////////////////////////////////////////
-
-procedure TMainForm.UpdateEmulation();
-var x: integer;
-  CustomComTerminal: TCustomComTerminal;
-begin
-  for x := 0 to 5 do
-  begin
-    case emulationCombo.ItemIndex of
-      0: GetComTerminal(x).Emulation := teNone;
-      1: GetComTerminal(x).Emulation := teVT100orANSI;
-      2: GetComTerminal(x).Emulation := teVT52;
-    end;
-  end;
- /// CustomComTerminal := TCustomComTerminal.Create(self);
- // CustomComTerminal.EscapeCodes
-end;
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -315,15 +257,13 @@ begin
   try
     for x := 0 to 5 do
     begin
-      GetComSlider(x).SliderOn := IniFile.ReadBool('User', 'Com' + IntToStr(x) + 'Enbl', true);
-      VisAry[x] := GetComSlider(x).SliderOn;
-      GetCompanel(x).Height := IniFile.ReadInteger('User', 'Com' + IntToStr(x) + 'Hght', 100);
+      ComPanel[x].Height := IniFile.ReadInteger('User', 'Com' + IntToStr(x) + 'Hght', 100);
+      ComSlider[x].SliderOn := IniFile.ReadBool('User', 'Com' + IntToStr(x) + 'Enbl', true);
+      VisAry[x] := ComSlider[x].SliderOn;
+
     end;
 
-    TABSlider.SliderOn := IniFile.ReadBool('User', 'Tab', true);
-    LFSilder.SliderOn := IniFile.ReadBool('User', 'LF', false);
     TimeSlider.SliderOn := IniFile.ReadBool('User', 'Time', false);
-    emulationCombo.ItemIndex := IniFile.ReadInteger('User', 'Emu', 0);
     FontSelect.ItemIndex := IniFile.ReadInteger('User', 'Font', 0);
 
     Left := IniFile.ReadInteger('User', 'L', Left);
@@ -346,15 +286,11 @@ begin
   try
     for x := 0 to 5 do
     begin
-      IniFile.WriteBool('User', 'Com' + IntToStr(x) + 'Enbl', GetComSlider(x).SliderOn);
-      IniFile.WriteInteger('User', 'Com' + IntToStr(x) + 'Hght', GetCompanel(x).Height);
+      IniFile.WriteBool('User', 'Com' + IntToStr(x) + 'Enbl', ComSlider[x].SliderOn);
+      IniFile.WriteInteger('User', 'Com' + IntToStr(x) + 'Hght', Companel[x].Height);
     end;
 
-    IniFile.WriteBool('User', 'Tab', TABSlider.SliderOn);
-    IniFile.WriteBool('User', 'LF', LFSilder.SliderOn);
     IniFile.WriteBool('User', 'Time', TimeSlider.SliderOn);
-
-    IniFile.WriteInteger('User', 'Emu', emulationCombo.ItemIndex);
     IniFile.WriteInteger('User', 'Font', FontSelect.ItemIndex);
     IniFile.WriteInteger('User', 'L', Left);
     IniFile.WriteInteger('User', 'T', Top);
@@ -369,10 +305,35 @@ end;
 /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.FormCreate(Sender: TObject);
+var x: integer;
 begin
   if not DirectoryExists(GetAppDir + '\Logs') then
-    CreateDir(GetAppDir + '\Logs')
+    CreateDir(GetAppDir + '\Logs');
+
+  for x := 0 to 5 do
+  begin
+    ComPort[x] := (FindComponent('ComPort' + IntToStr(x)) as TComPort);
+    ComPort[x].OnRxBuf := RxBuf;
+    ComSlider[x] := (FindComponent('ComSlider' + IntToStr(x)) as TsSlider);
+    ComPanel[x] := (FindComponent('ComPanel' + IntToStr(x)) as TPanel);
+    ComLabel[x] := (FindComponent('ComLabel' + IntToStr(x)) as TsLabel);
+    ConnectBtn[x] := (FindComponent('ConnectBtn' + IntToStr(x)) as TSbutton);
+    SettingsBtn[x] := (FindComponent('SettingsBtn' + IntToStr(x)) as TSbutton);
+    AutoChk[x] := (FindComponent('AutoChk' + IntToStr(x)) as TsCheckbox);
+    PortMemo[x] := (FindComponent('PortMemo' + IntToStr(x)) as TMemo);
+    ComPanel[x].Align := alNone;
+  end;
+
+
+
+
+  for x := 5 to 0 do
+  begin
+    ComPanel[x].Align := alTop;
+  end;
+
 end;
+
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -392,19 +353,21 @@ begin
   LogDir := GetAppDir + 'Logs\';
   LoadConfig(ConfigFile);
   UpDateStatusBar();
-  UpdateEmulation();
   UpdateFont();
   Statusbar.Panels[0].Text := 'V : ' + GetLocalVersion();
+
 
   for x := 0 to 5 do
   begin
     if FileExists(ConfigFile) then
-      GetComPort(x).LoadSettings(stIniFile, ConfigFile);
-    GetComLabel(x).Caption := GetComPort(x).Port;
-    StatusBar.Panels[x + 1].Text := GetComPort(x).Port;
+      ComPort[x].LoadSettings(stIniFile, ConfigFile);
+    ComPanel[x].SendToBack;
+    ComPanel[x].Align := altop;
+    LogStrAry[0] := TStringList.Create;
+    ComLabel[x].Caption := ComPort[x].Port;
+    StatusBar.Panels[x + 1].Text := ComPort[x].Port;
   end;
-  SessionDate := FormatDateTime('yyyy-mm-dd-hh-nn-', Now());
-
+  SessionDate := FormatDateTime('yyyy-mm-dd_hh-nn', Now());
 end;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -413,8 +376,8 @@ procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 var x: integer;
 begin
   for x := 0 to 5 do
-    if (GetCOmPort(x).Connected) then
-      GetComPort(x).close;
+    if (ComPort[x].Connected) then
+      ComPort[x].close;
   SaveConfig(ConfigFile);
 end;
 
@@ -423,7 +386,6 @@ end;
 procedure TMainForm.FormResize(Sender: TObject);
 begin
   if (Height > Screen.DesktopHeight) then Height := Screen.DesktopHeight;
-  ComTerminalResize(nil);
   UpDateStatusBar();
 end;
 
@@ -437,10 +399,31 @@ begin
     ChkSender := Sender as TsCheckBox;
     CheckBox := FindComponent('AutoChk' + IntToStr(ChkSender.Tag)) as TsCheckBox;
     LogAry[ChkSender.Tag] := CheckBox.Checked;
+   // SaveTimer.Enabled := true; // enable the save timer
   end;
 end;
 
   /////////////////////////////////////////////////////////////////////////////
+
+procedure TMainForm.ConnectAllBtnClick(Sender: TObject);
+var Slider: TsSlider;
+var x: integer;
+begin
+  ConnectAllBtn.ImageIndex := 0; // reset image, only change again
+  for x := 0 to 5 do
+  begin
+    if (ComSlider[x].SliderOn) then
+    begin
+      ConnectBtn[x].Click;
+      if (ComPort[x].Connected) then
+        ConnectAllBtn.ImageIndex := 1;
+    end;
+  end;
+  timer1.Enabled := true;
+end;
+
+   /////////////////////////////////////////////////////////////////////////////
+
 
 procedure TMainForm.AutoLogBtnClick(Sender: TObject);
 var CheckBox: TsCheckBox;
@@ -451,6 +434,7 @@ begin
   begin
     CheckBox := FindComponent('AutoChk' + IntToStr(x)) as TsCheckBox;
     CheckBox.Checked := AutoLogOn;
+    SaveTimer.Enabled := true; // enable the save timer
   end;
 end;
   /////////////////////////////////////////////////////////////////////////////
@@ -461,64 +445,72 @@ begin
     PChar(GetAppDir + 'Logs'), nil, SW_NORMAL);
 end;
 
-/////////////////////////////////////////////////////////////////////////////
-
-procedure TMainForm.LFSilderSliderChange(Sender: TObject);
-var
-  x: integer;
-begin
-  for x := 0 to 5 do
-    GetComTerminal(x).AppendLF := LFSilder.SliderOn
-end;
-
 ////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.SliderChange(Sender: TObject);
 var
   Slider: TsSlider;
+  i, CurrentTop: Integer;
 begin
   if Sender is TsSlider then
   begin
     Slider := Sender as TsSlider;
-    GetCompanel(Slider.Tag).Visible := Slider.SliderOn;
+    ComPanel[Slider.Tag].Visible := ComSlider[Slider.Tag].SliderOn;
     VisAry[Slider.Tag] := Slider.SliderOn;
+
+    // Ensure MenuPanel is always at the top
+    MenuPanel.Top := 0;
+
+    // Rearrange the other panels below the MenuPanel
+    CurrentTop := MenuPanel.Top + MenuPanel.Height; // Start positioning below the menu
+    for i := 0 to High(ComPanel) do
+    begin
+      if ComPanel[i].Visible then
+      begin
+        ComPanel[i].Top := CurrentTop;
+        Inc(CurrentTop, ComPanel[i].Height); // Move down for the next panel
+      end;
+    end;
   end;
 end;
-/////////////////////////////////////////////////////////////////////////////
 
-procedure TMainForm.TABSliderSliderChange(Sender: TObject);
-var
-  x: integer;
-begin
-  for x := 0 to 5 do
-    GetComTerminal(x).WantTab := TABSlider.SliderOn;
-end;
+
 /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.OpenClose(Sender: TObject);
 var btn: TsButton;
 begin
+  application.ProcessMessages;
   if Sender is TsButton then
   begin
+    Timer1.Enabled := true;
     Btn := Sender as TsButton;
-    if (GetComPort(Btn.Tag) <> nil) then
+    if (ComPort[Btn.Tag] <> nil) then
     begin
-      if GetComPort(Btn.Tag).Connected then
+      PostStrAry[Btn.Tag] := ComPort[Btn.Tag].Port;
+      if ComPort[Btn.Tag].Connected then
       begin
-        GetComPort(Btn.Tag).Close;
-        GetComLabel(Btn.Tag).Font.Color := clRed;
-        Btn.Caption := 'Connect';
-        GetConnectBtn(Btn.Tag).ImageIndex := 0;
-        GetConnectBtn(Btn.Tag).Down := False;
-        Timer0.Enabled := false;
+        ComPort[Btn.Tag].Close;
+        ComLabel[Btn.Tag].Font.Color := clRed;
+        ConnectBtn[Btn.Tag].Caption := 'Connect';
+        ConnectBtn[Btn.Tag].ImageIndex := 0;
+        ConnectBtn[Btn.Tag].Down := False;
       end else begin
-        GetComPort(Btn.Tag).Open;
-        GetComLabel(Btn.Tag).Font.Color := $0033CC00;
-        Btn.Caption := 'Disconnect';
-        GetConnectBtn(Btn.Tag).ImageIndex := 1;
-        GetConnectBtn(Btn.Tag).Down := True;
-        Timer0.Enabled := True;
+        try
+          ComPort[Btn.Tag].open;
+          ComLabel[Btn.Tag].Font.Color := $0033CC00;
+          ConnectBtn[Btn.Tag].Caption := 'Disconnect';
+          ConnectBtn[Btn.Tag].ImageIndex := 1;
+          ConnectBtn[Btn.Tag].Down := True;
+          LogRxStrAry[Tag] := '';
+        except
+          on E: Exception do
+          begin
+            StatusBar.Panels[Tag + 1].Text := 'Error: + ' + E.Message;
+          end;
+        end;
       end;
+      application.ProcessMessages;
     end;
   end;
 end;
@@ -528,16 +520,43 @@ end;
 procedure TMainForm.ComPortException(Sender: TObject;
   TComException: TComExceptions; ComportMessage: string; WinError: Int64;
   WinMessage: string);
+var
+  CPort: TComPort;
 begin
-  case WinError of
-    2: begin
-        Dialogs.MessageDlg(ComportMessage, mtWarning, [mbOK], 0);
+  // Check if the Sender is a TComPort
+  if Sender is TComPort then
+  begin
+    CPort := TComPort(Sender); // Cast Sender to TComPort
 
-      end;
+    // Use the Tag property to identify the triggering ComPort
+  //  if Assigned(ConnectBtn[ComPort.Tag]) then
+  //  begin
+//ComPort[CPort.Tag].Close;
+   // ConnectBtn[CPort.Tag].Click;
+
+    ComLabel[CPort.Tag].Font.Color := clRed;
+    ConnectBtn[CPort.Tag].Caption := 'Connect';
+    ConnectBtn[CPort.Tag].ImageIndex := 0;
+    ConnectBtn[CPort.Tag].Down := False;
+ //   showmessage('panic');
+    application.ProcessMessages;
+ //   end;
+
+    // Update the StatusBar with the error information
+    Statusbar.Panels[CPort.Tag + 1].Text := Format('%s: %s', [ComPort[CPort.Tag].Port, ComportMessage]);
+    Statusbar.Panels[7].Text := Format('ERROR on COM%d: %s (%d)', [CPort.Tag, ComportMessage, WinError]);
+  end
   else
-    Statusbar.Panels[7].Text := 'ERROR : ' + ComportMessage + ' (' + IntToStr(WinError) + ')'; ErrorTimmer.Enabled := True;
+  begin
+    // Handle unexpected Sender types
+    Statusbar.Panels[7].Text := 'ERROR: Unknown COM port exception';
   end;
+
+  // Enable the error timer to clear the StatusBar after a delay
+  ErrorTimmer.Enabled := True;
 end;
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -551,13 +570,17 @@ end;
 procedure TMainForm.Settings(Sender: TObject);
 var
   SenderBtn: TsButton;
+
 begin
   if Sender is TButton then
   begin
     SenderBtn := Sender as TsButton;
-    GetComPort(SenderBtn.Tag).ShowSetupDialog;
-    GetComPort(SenderBtn.Tag).StoreSettings(stIniFile, GetAppDir + 'config.ini');
-    GetComLabel(SenderBtn.Tag).Caption := GetComPort(SenderBtn.Tag).Port;
+
+    ComPort[SenderBtn.Tag].ShowSetupDialog;
+    PortMemo[SenderBtn.Tag].clear; ;
+
+    ComPort[SenderBtn.Tag].StoreSettings(stIniFile, GetAppDir + 'config.ini');
+    ComLabel[SenderBtn.Tag].Caption := ComPort[SenderBtn.Tag].Port;
   end;
 end;
 
@@ -573,25 +596,11 @@ begin
   begin
     DeltaY := Mouse.CursorPos.Y - FStartY;
     Img := Sender as TsImage;
-    GetCompanel(Img.Tag).Height := GetCompanel(Img.Tag).Height + DeltaY;
+    Companel[Img.Tag].Height := Companel[Img.Tag].Height + DeltaY;
     FStartY := Mouse.CursorPos.Y;
   end;
 end;
 
- /////////////////////////////////////////////////////////////////////////////
-
-procedure TMainForm.ComTerminalResize(Sender: TObject);
-//var x: integer;
-begin
- // for x := 0 to 5 do
- //   GetComTerminal(x).Rows := (GetCompanel(x).Height div GetComTerminal(x).Font.Size) - 6;
-end;
- /////////////////////////////////////////////////////////////////////////////
-
-procedure TMainForm.emulationComboCloseUp(Sender: TObject);
-begin
-  UpdateEmulation();
-end;
  /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.FontSelectCloseUp(Sender: TObject);
@@ -618,7 +627,7 @@ begin
   if (DivCount > 0) then
   begin
     for x := 0 to 5 do
-      GetCompanel(x).Height := PHeight div DivCount;
+      Companel[x].Height := PHeight div DivCount;
   end;
 
   if (Height < Screen.WorkAreaHeight) then
@@ -643,7 +652,7 @@ begin
   begin
     if (VisAry[x] = true) then
     begin
-      MHeight := MHeight + GetCompanel(x).Height;
+      MHeight := MHeight + Companel[x].Height;
     end;
   end;
   HeadFoot := MenuPanel.Height + StatusBar.Height;
@@ -653,8 +662,6 @@ begin
   begin
     vFitBtn.Click;
   end;
-
-
   update;
 end;
 
@@ -671,7 +678,7 @@ begin
   for x := 0 to 5 do
   begin
     if (VisAry[x] = true) then
-      MHeight := MHeight + GetCompanel(x).Height;
+      MHeight := MHeight + Companel[x].Height;
 
   end;
   HeadFoot := MenuPanel.Height + StatusBar.Height;
@@ -687,49 +694,90 @@ end;
 
  /////////////////////////////////////////////////////////////////////////////
 
-procedure TMainForm.ComPortRxChar(Sender: TObject; Count: Integer);
+
+procedure TMainForm.SaveTimerTimer(Sender: TObject);
+var x: integer;
+  Filename: string;
+  FileStream: TFileStream;
+begin
+  application.ProcessMessages;
+  for x := 0 to 5 do
+  begin
+    if ((ComPort[x].Connected) and (LogAry[x])) then
+    begin
+      FileName := GetAppDir + 'logs\' + SessionDate + '_' + ComPort[x].Port + '_Data.txt';
+
+      // Create a TFileStream to write the contents of the terminal to a file
+      FileStream := TFileStream.Create(FileName, fmCreate);
+      try
+        // Save the contents of the memo to the stream
+        PortMemo[x].Lines.SaveToStream(FileStream);
+      finally
+        FileStream.Free; // Free the stream
+      end;
+    end;
+  end;
+end;
+
+ /////////////////////////////////////////////////////////////////////////////
+
+procedure TMainForm.RxBuf(Sender: TObject; const Buffer; Count: Integer);
 var
-  Str, Portstr: string;
+  Data: AnsiString;
+  ReceivedData: array of Byte;
   ComSender: tComPort;
-  Tag: integer;
+  Tag, i: Integer;
+  TerminatorPos: Integer;
+  RawOutput: string;
 begin
   ComSender := Sender as tComPort;
   Tag := ComSender.Tag;
-  GetComPort(ComSender.Tag).ReadStr(Str, Count);
-  Portstr := GetComPort(ComSender.Tag).Port;
-  RxAry[ComSender.Tag] := RxAry[ComSender.Tag] + Str;
 
-  if ((Pos(#0, RxAry[Tag]) > 0) or (Pos(#13 + #10, RxAry[Tag]) > 0)) then
-  begin
-    StatusBar.Panels[Tag + 1].Text := Portstr + ': ' + IntToStr(Length(RxAry[Tag])) + ' Bytes recv';
-    if (TimeSlider.SliderOn) then
+  // Check if Count is valid
+  if Count <= 0 then Exit;
+
+  StatusBar.Panels[Tag + 1].Text := IntToStr(Count) + ' Bytes received';
+
+  // Allocate memory and copy data
+  SetLength(ReceivedData, Count);
+  Move(Buffer, ReceivedData[0], Count);
+
+
+  // Convert raw data to a string and append it to the buffer
+  SetString(Data, PAnsiChar(@Buffer), Count);
+  LogRxStrAry[Tag] := LogRxStrAry[Tag] + Data;
+
+  // Check for complete messages terminated by #10 (LF) or #13#10 (CRLF)
+  repeat
+    TerminatorPos := Pos(#10, LogRxStrAry[Tag]); // Adjust to match your terminator
+    if TerminatorPos > 0 then
     begin
-      RxAry[Tag] := FormatDateTime('hh:nn:ss.zzz', Now()) + ' : ' + RxAry[Tag];
-    end;
-    GetComTerminal(Tag).WriteStr(RxAry[Tag]);
+      // Extract the complete message up to the terminator
+      if (TimeSlider.SliderOn) then
+        PortMemo[tag].Lines.Append(FormatDateTime('hh:nn:ss.zzz', Now()) + ' - ' + Copy(LogRxStrAry[Tag], 1, TerminatorPos - 1))
+      else
 
-    if (LogAry[Tag]) then
-    begin
-      TLogSaveThread.Create(Portstr, RxAry[Tag], Tag);
-      StatusBar.Panels[Tag + 1].Text := 'Saving';
-    end;
+        PortMemo[tag].Lines.Append(Copy(LogRxStrAry[Tag], 1, TerminatorPos - 1));
 
-    RxAry[Tag] := '';
-  end;
+      // Remove the processed message from the buffer
+      Delete(LogRxStrAry[Tag], 1, TerminatorPos);
+    end;
+  until TerminatorPos = 0;
 end;
+
  /////////////////////////////////////////////////////////////////////////////
 
 procedure TMainForm.PopExportClick(Sender: TObject);
 var
-  Terminal: TComTerminal;
+  Memo: TMemo;
   FileStream: TFileStream;
 begin
   // Check if the PopupMenu's PopupComponent is a TComTerminal
-  if ExportPopup.PopupComponent is TComTerminal then
+  if ExportPopup.PopupComponent is TMemo then
   begin
     // Access the TComTerminal and get its Tag
-    Terminal := TComTerminal(ExportPopup.PopupComponent);
-    SaveDialog.FileName := GetComPort(Terminal.Tag).Port + '-Data.txt';
+    Memo := TMemo(ExportPopup.PopupComponent);
+    SaveDialog.FileName := ComPort[Tag].Port + '-Data.txt';
 
     if SaveDialog.Execute then
     begin
@@ -737,7 +785,7 @@ begin
       FileStream := TFileStream.Create(SaveDialog.FileName, fmCreate);
       try
         // Save the contents of the terminal to the stream
-        Terminal.SaveToStream(FileStream);
+        PortMemo[tag].Lines.SaveToStream(FileStream);
       finally
         FileStream.Free; // Free the stream
       end;
@@ -748,14 +796,14 @@ end;
 
 procedure TMainForm.PopClearClick(Sender: TObject);
 var
-  Terminal: TComTerminal;
+  Memo: TMemo;
 begin
-  // Check if the PopupMenu's PopupComponent is a TComTerminal
-  if ExportPopup.PopupComponent is TComTerminal then
+  // Check if the PopupMenu's PopupComponent is a TMemo
+  if ExportPopup.PopupComponent is TMemo then
   begin
     // Access the TComTerminal and get its Tag
-    Terminal := TComTerminal(ExportPopup.PopupComponent);
-    Terminal.ClearScreen;
+    Memo := TMemo(ExportPopup.PopupComponent);
+    Memo.Clear;
   end
 
 end;
@@ -772,5 +820,25 @@ end;
 
  /////////////////////////////////////////////////////////////////////////////
 
+
+
+procedure TMainForm.Timer1Timer(Sender: TObject);
+var x: integer;
+begin
+   exit;
+  Timer1.Enabled := false; ConnectAllBtn.ImageIndex := 0;
+  for x := 0 to 5 do
+  begin
+    if (ComSlider[x].SliderOn) then
+    begin
+      ComPort[x].Close;
+      ComLabel[x].Font.Color := clRed;
+      ConnectBtn[x].Caption := 'Connect';
+      ConnectBtn[x].ImageIndex := 0;
+      ConnectBtn[x].Down := False;
+    end;
+  end;
+
+end;
 end.
 

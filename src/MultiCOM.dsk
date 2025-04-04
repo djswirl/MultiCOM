@@ -1,14 +1,14 @@
 [Closed Files]
-File_0=SourceModule,'D:\Delphi\MultiCOM\SaveLog.pas',0,1,46,19,4,0,0
-File_1=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\ComPort-Library\Source\CPortCtl.pas',0,1,2044,1,2061,0,0
-File_2=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\ComPort-Library\Source\CPortEsc.pas',0,1,78,1,102,0,0
-File_3=SourceModule,'c:\program files (x86)\borland\delphi6\source\vcl\Controls.pas',0,1,7685,1,7702,0,0
-File_4=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\ComPort-Library\Source\CPort.pas',0,1,776,1,790,0,0
-File_5=SourceModule,'c:\program files (x86)\borland\delphi6\source\rtl\Win\Windows.pas',0,1,28672,22,28689,0,0
-File_6=SourceModule,'c:\program files (x86)\borland\delphi6\source\vcl\Dialogs.pas',0,1,299,34,317,0,0
-File_7=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPort.pas',0,1,1904,30,1907,0,0
-File_8=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\sButton.pas',0,1,1201,1,1218,0,0
-File_9=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Packages\comport411f\Source\CPortEsc.pas',0,1,91,1,102,0,0
+File_0=SourceModule,'D:\Delphi\MultiCOM\SaveLog.pas',0,1,25,46,30,0,0
+File_1=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\ComPort-Library\Source\CPortCtl.pas',0,1,1704,9,1725,0,0
+File_2=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\ComPort-Library\Source\CPort.pas',0,1,1603,1,1620,0,0
+File_3=SourceModule,'c:\program files (x86)\borland\delphi6\source\rtl\common\classes.pas',0,1,74,1,95,0,0
+File_4=SourceModule,'c:\program files (x86)\borland\delphi6\source\rtl\Sys\system.pas',0,1,1,1,10,0,0
+File_5=SourceModule,'D:\GitHub\MultiCOM\src\ComMainForm.pas',0,1,689,8,700,1,0
+File_6=SourceModule,'C:\Program Files (x86)\Borland\Delphi6\Installed Packages\ComPort-Library\Source\CPortEsc.pas',0,1,230,1,52,0,0
+File_7=SourceModule,'c:\program files (x86)\borland\delphi6\source\vcl\Controls.pas',0,1,3660,1,3669,0,0
+File_8=SourceModule,'c:\program files (x86)\borland\delphi6\source\rtl\Win\Windows.pas',0,1,28672,22,28689,0,0
+File_9=SourceModule,'c:\program files (x86)\borland\delphi6\source\vcl\Dialogs.pas',0,1,299,34,317,0,0
 
 [Modules]
 Module0=D:\Delphi\MultiCOM\ComMainForm.pas
@@ -20,7 +20,7 @@ ModuleType=SourceModule
 FormState=1
 FormOnTop=0
 
-[C:\Program Files (x86)\Borland\Delphi6\Projects\ProjectGroup1.bpg]
+[D:\Delphi\MultiCOM\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
@@ -37,8 +37,8 @@ MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=275
-Top=110
+Left=272
+Top=109
 Width=1306
 Height=734
 MaxLeft=-1
@@ -51,13 +51,13 @@ LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000
 RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D657373616765566965770A050000000000000224010000000000000100000000000000000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000400010000000B0000004D657373616765566965770A0500000000000002A8000000000000000100000000000000000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000000000001000000000A0500000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
 Module=D:\Delphi\MultiCOM\ComMainForm.pas
-CursorX=58
-CursorY=16
-TopLine=760
+CursorX=9
+CursorY=828
+TopLine=114
 LeftCol=1
 
 [Watches]
@@ -148,20 +148,20 @@ Create=1
 Visible=1
 State=0
 Left=0
-Top=233
-Width=266
-Height=469
+Top=238
+Width=263
+Height=471
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=266
-ClientHeight=469
+ClientWidth=263
+ClientHeight=471
 TBDockHeight=527
-LRDockWidth=266
+LRDockWidth=263
 Dockable=1
 SplitPos=131
 ArrangeBy=Name
-SelectedItem=OnMouseMove
-ExpandedItems=AnimEffects.FormShow,AnimEffects.Minimizing,BoundLabel,Events,FlowControl,FormHeader,MenuAnimation,SkinningRules,Timeouts
+SelectedItem=Caption
+ExpandedItems=AnimEffects.FormShow,AnimEffects.Minimizing,BoundLabel,Events,FormHeader,MenuAnimation,SkinningRules,StoredProps
 HiddenCategories=
 
 [WatchWindow]
@@ -265,14 +265,14 @@ Visible=1
 State=0
 Left=0
 Top=12
-Width=266
-Height=205
+Width=263
+Height=210
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=266
-ClientHeight=205
+ClientWidth=263
+ClientHeight=210
 TBDockHeight=352
-LRDockWidth=266
+LRDockWidth=263
 Dockable=1
 
 [DebugLogView]
@@ -369,12 +369,12 @@ State=0
 Left=12
 Top=0
 Width=1278
-Height=292
+Height=168
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1278
-ClientHeight=292
-TBDockHeight=292
+ClientHeight=168
+TBDockHeight=168
 LRDockWidth=443
 Dockable=1
 
@@ -387,16 +387,16 @@ Create=1
 Visible=1
 State=0
 Left=0
-Top=112
-Width=282
-Height=741
+Top=106
+Width=279
+Height=748
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=266
-ClientHeight=702
-TBDockHeight=741
-LRDockWidth=282
+ClientWidth=263
+ClientHeight=709
+TBDockHeight=728
+LRDockWidth=284
 Dockable=1
 DockClients=ObjectTree,PropertyInspector
-DockSiteData=0000040000000000BE02000000000000010A010000000000000100000000DD0000000E0000004F626A65637454726565566965770100000000BE0200001100000050726F7065727479496E73706563746F72FFFFFFFF
+DockSiteData=0000040000000000C5020000000000000107010000000000000100000000E20000000E0000004F626A65637454726565566965770100000000C50200001100000050726F7065727479496E73706563746F72FFFFFFFF
 
